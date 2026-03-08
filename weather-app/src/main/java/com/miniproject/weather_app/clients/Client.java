@@ -1,5 +1,6 @@
 package com.miniproject.weather_app.clients;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -9,16 +10,22 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class Client {
 
+    @Value("${weather.api.base:https://api.weatherapi.com/v1/current.json}")
+    private String apiBase;
+
+    @Value("${weather.api.key:}")
+    private String apiKey;
+
     public Object callThirdPartyWeatherApi(String cityName)
     {
-//        7b9a081bbe1e451692081706260803
-        String endPoint = "https://api.weatherapi.com/v1/current.json?key=7b9a081bbe1e451692081706260803&q="+ cityName;
+        // Build the endpoint from configured base and key
+        String endPoint = String.format("%s?key=%s&q=%s", apiBase, apiKey, cityName);
 
-        RequestEntity request = RequestEntity.get(endPoint).build(); // our request is created here
+    RequestEntity<Void> request = RequestEntity.get(endPoint).build(); // our request is created here
 
-        RestTemplate restTemplate = new RestTemplate();
+    RestTemplate restTemplate = new RestTemplate();
 
-        ResponseEntity response = restTemplate.exchange(endPoint, HttpMethod.GET, request, Object.class);
+    ResponseEntity<Object> response = restTemplate.exchange(endPoint, HttpMethod.GET, request, Object.class);
 
         // here request is executed just like send button on postman
 
